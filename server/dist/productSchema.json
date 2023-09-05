@@ -1,0 +1,17 @@
+[
+    {
+        "type": "object",
+        "properties": {
+            "product_code": {
+                "type": "number"
+            },
+            "new_price": {
+                "type": "number"
+            }
+        },
+        "required": [
+            "product_code",
+            "new_price"
+        ]
+    }
+]
