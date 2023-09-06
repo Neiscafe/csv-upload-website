@@ -1,35 +1,77 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+// import { useState } from 'react'
+// import reactLogo from './assets/react.svg'
+// import viteLogo from '/vite.svg'
+// import './App.css'
+// import { Container, Row, Col } from 'react-bootstrap';
+// import CsvUploader from './Csv-uploader';
 
-function App() {
-  const [count, setCount] = useState(0)
+// const App: React.FC = () => {
+//   const [response, setResponse] = useState<string>('');
+
+//   return (
+//     <Container>
+//       <Row>
+//         <Col>
+//           <h1>Upload de CSV</h1>
+//           <CsvUploader/>
+//         </Col>
+//       </Row>
+//       <Row>
+//         <Col>
+//           <h2>Resposta do Back-end</h2>
+//           <pre>{response}</pre>
+//         </Col>
+//       </Row>
+//     </Container>
+//   );
+// };
+
+// export default App;
+
+import React, { useState } from 'react';
+import { Container, Row, Col } from 'react-bootstrap';
+import CsvUploader from './Csv-uploader';
+
+const App: React.FC = () => {
+  const [response, setResponse] = useState<string>('');
+
+  const handleUpload = async (file: File) => {
+    try {
+      const formData = new FormData();
+      formData.append('csvFile', file);
+
+      const response = await fetch('http://localhost:3000/update', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (response.ok) {
+        const data = await response.text();
+        setResponse(data);
+      } else {
+        throw new Error('Erro ao enviar o arquivo CSV.');
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+    <Container>
+      <Row>
+        <Col>
+          <h1>Upload de CSV</h1>
+          <CsvUploader onUpload={handleUpload} />
+        </Col>
+      </Row>
+      <Row>
+        <Col>
+          <h2>Resposta do Back-end</h2>
+          <pre>{response}</pre>
+        </Col>
+      </Row>
+    </Container>
+  );
+};
 
-export default App
+export default App;
