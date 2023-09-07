@@ -4,7 +4,7 @@ export class ProductRequest {
 
     constructor(s: string[]){
         this.product_code = parseInt(s[0]);
-        this.new_price = parseInt(s[1]);    
+        this.new_price = parseFloat(s[1]);    
     }
 
     stringToInt(s: string[]){

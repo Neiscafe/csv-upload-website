@@ -40,8 +40,6 @@ const App: React.FC = () => {
 
   const handleUpload = async (file: File) => {
     try {
-      const formData = new FormData();
-      formData.append('csvFile', file);
       let b = await file.text();
       b = b.slice(strOffset);
       console.log("formData ", b);
@@ -56,7 +54,7 @@ const App: React.FC = () => {
       console.log(pList.array);
       const response = await fetch('http://localhost:3000/update/', {
         method: 'POST',
-        body: formData,
+        body: JSON.stringify(pList.array)
       });
 
       if (response.ok) {
