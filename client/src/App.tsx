@@ -51,10 +51,11 @@ const App: React.FC = () => {
         args = c[i].split(",");
         pList.add(new ProductRequest(args));
       }
-      console.log(pList.array);
+      console.log(JSON.stringify(pList.array));
       const response = await fetch('http://localhost:3000/update/', {
         method: 'POST',
-        body: JSON.stringify(pList.array)
+        headers: {"Content-Type": "application/json; charset=utf-8"},
+        body: JSON.stringify(pList.array),
       });
 
       if (response.ok) {

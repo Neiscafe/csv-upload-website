@@ -42,8 +42,8 @@ const yourController = {
       
       const products = plainToClass(ProductForm, jsonData);
 
-      console.log('JSON recebido:', jsonData);
-      res.json({ message: 'JSON recebido com sucesso.' });
+      console.log('JSON recebido:', products);
+      res.json({ message: jsonData});
     } catch (error) {
       console.error('Erro:', error);
       res.status(500).json({ error: 'Erro interno do servidor' });

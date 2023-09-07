@@ -14,4 +14,9 @@ export class PRArray {
         this.size++;
         this.array[this.size-1] = toAdd; 
     }
+
+    // toJson(): string{
+        
+    //     return "";
+    // }
 }
