@@ -31,6 +31,9 @@
 import React, { useState } from 'react';
 import { Container, Row, Col } from 'react-bootstrap';
 import CsvUploader from './Csv-uploader';
+import { PRArray } from './model/PRArray';
+import { ProductRequest } from './model/ProductRequest';
+const strOffset = 24;
 
 const App: React.FC = () => {
   const [response, setResponse] = useState<string>('');
@@ -39,7 +42,18 @@ const App: React.FC = () => {
     try {
       const formData = new FormData();
       formData.append('csvFile', file);
-
+      let b = await file.text();
+      b = b.slice(strOffset);
+      console.log("formData ", b);
+      const c = b.split("\r\n");
+      console.log(c);
+      let pList = new PRArray();
+      let args: string[];
+      for (let i = 0; i < c.length; i++){
+        args = c[i].split(",");
+        pList.add(new ProductRequest(args));
+      }
+      console.log(pList.array);
       const response = await fetch('http://localhost:3000/update/', {
         method: 'POST',
         body: formData,

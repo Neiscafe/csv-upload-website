@@ -42,7 +42,7 @@ const yourController = {
       
       const products = plainToClass(ProductForm, jsonData);
 
-      console.log('JSON recebido:', products);
+      console.log('JSON recebido:', jsonData);
       res.json({ message: 'JSON recebido com sucesso.' });
     } catch (error) {
       console.error('Erro:', error);

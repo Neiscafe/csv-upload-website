@@ -51,7 +51,7 @@ const yourController = {
                 //   return res.status(400).json({ errors });
                 // }
                 const products = (0, class_transformer_1.plainToClass)(productForm_1.ProductForm, jsonData);
-                console.log('JSON recebido:', products);
+                console.log('JSON recebido:', jsonData);
                 res.json({ message: 'JSON recebido com sucesso.' });
             }
             catch (error) {
