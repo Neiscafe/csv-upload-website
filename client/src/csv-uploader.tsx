@@ -1,7 +1,5 @@
 // import React, { ChangeEvent, useState } from 'react';
 // import Papa, {ParseResult} from 'papaparse';
-import React, { useState } from 'react';
-import { Form, Button } from 'react-bootstrap';
 
 // type Data={
 //   product_code: number,
@@ -63,6 +61,10 @@ import { Form, Button } from 'react-bootstrap';
 // }
 
 // export default FileUploadSingle;
+
+import React, { useState } from 'react';
+import { Button } from 'react-bootstrap';
+
 interface CsvUploaderProps {
   onUpload: (file: File) => void;
 }

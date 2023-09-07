@@ -41,9 +41,6 @@ const yourController = {
       // }
       
       const products = plainToClass(ProductForm, jsonData);
-      products.forEach(element => {
-        console.log('id:', element.product_code);
-      });      
 
       console.log('JSON recebido:', products);
       res.json({ message: 'JSON recebido com sucesso.' });

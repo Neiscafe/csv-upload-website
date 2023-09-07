@@ -40,7 +40,7 @@ const App: React.FC = () => {
       const formData = new FormData();
       formData.append('csvFile', file);
 
-      const response = await fetch('http://localhost:3000/update', {
+      const response = await fetch('http://localhost:3000/update/', {
         method: 'POST',
         body: formData,
       });
