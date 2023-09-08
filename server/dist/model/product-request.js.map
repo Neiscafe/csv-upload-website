@@ -1,0 +1,1 @@
+{"version":3,"file":"product-request.js","sourceRoot":"","sources":["../../src/model/product-request.ts"],"names":[],"mappings":";;;AAEA,MAAa,UAAU;IAKnB,YAAY,WAAmB,EAAE,QAAgB;QAC7C,IAAI,CAAC,YAAY,GAAG,WAAW,CAAC;QAChC,IAAI,CAAC,SAAS,GAAG,QAAQ,CAAC;IAC9B,CAAC;CACJ;AATD,gCASC"}

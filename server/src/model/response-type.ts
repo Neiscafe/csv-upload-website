@@ -1,4 +1,4 @@
-export class ResponseType {
+export class ValidationType {
     type: string;
     message: string;
     constructor(type: string, message: string) {

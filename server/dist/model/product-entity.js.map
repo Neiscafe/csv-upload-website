@@ -1,0 +1,1 @@
+{"version":3,"file":"product-entity.js","sourceRoot":"","sources":["../../src/model/product-entity.ts"],"names":[],"mappings":";;;AAAA,MAAa,aAAa;IAMtB,YAAY,IAAY,EAAE,IAAY,EAAE,SAAiB,EAAE,UAAkB;QACzE,IAAI,CAAC,IAAI,GAAG,IAAI,CAAC;QACjB,IAAI,CAAC,IAAI,GAAG,IAAI,CAAC;QACjB,IAAI,CAAC,UAAU,GAAG,SAAS,CAAC;QAC5B,IAAI,CAAC,WAAW,GAAG,UAAU,CAAC;IAClC,CAAC;CAEJ;AAbD,sCAaC"}
