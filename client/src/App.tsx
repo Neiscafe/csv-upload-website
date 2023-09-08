@@ -6,8 +6,7 @@ import { ProductRequest } from './model/ProductRequest';
 const strOffset = 24;
 
 const App: React.FC = () => {
-  const [response, setResponse] = useState<string>('');
-  const[responseType, setResponseType] = useState<string>("");
+  const[responseType, setResponseType] = useState<boolean>(true);
   const[responseBody, setResponseBody] = useState<string>("");
 
   const handleUpload = async (file: File) => {
@@ -31,15 +30,17 @@ const App: React.FC = () => {
       });
 
       if (response.ok) {
+        setResponseType(false);
         const data = await response.text();
-        setResponse(data);
+        setResponseBody(data);
       }else{
-        setResponseType("Error!");
+        setResponseType(true);
         const data = await response.text();
         setResponseBody(data)
       }
     } catch (error) {
-      console.error(error);
+      setResponseType(true);
+      setResponseBody("Uknown Error ocurred!")
     }
   };
 
@@ -61,13 +62,12 @@ const App: React.FC = () => {
       </Row>
       <Row>
         <Col>
-          <Button onClick={onFinish}>Atualizar</Button>
+          <Button onClick={onFinish} disabled = {responseType}>Atualizar</Button>
           <h2>Resposta do Back-end</h2>
           <div>
             <h1>{responseType}</h1>
             <h2>{responseBody}</h2>
           </div>
-          <pre>{response}</pre>
         </Col>
       </Row>
     </Container>

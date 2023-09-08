@@ -47,36 +47,30 @@ const yourController = {
                 const products = (0, class_transformer_1.plainToClass)(product_request_1.ProductReq, jsonData);
                 const connection = yield pool.getConnection();
                 const [product_db] = yield connection.execute('SELECT * FROM products');
-                console.log(product_db);
-                let items = product_db;
-                // const [packs_db] = await connection.execute<Product[] & RowDataPacket[]>('SELECT * FROM packs');
-                const validationStatus = validateItems(products, items);
-                console.log(validationStatus);
+                const productItems = product_db;
+                const [packs_db] = yield connection.execute('SELECT * FROM packs');
+                const packItems = packs_db;
+                const validationStatus = validateItems(products, productItems, packItems);
                 if (validationStatus[0].type == "Success") {
                     res.status(200).json({ validationStatus });
                 }
                 else {
                     res.status(500).json({ validationStatus });
                 }
-                // res.json(jsonData);
             }
             catch (error) {
                 console.error('Erro:', error);
-                // res.status(500).json({ error: 'Erro interno do servidor' });
             }
         });
     }
 };
-function validateItems(productsFromReq, productsEntity) {
+function validateItems(productsFromReq, productsEntity, packItems) {
     let totalErrors = [];
     for (let reqProduct of productsFromReq) {
         const a = itemHasValidFields(reqProduct);
         const b = itemExistsInDb(reqProduct, productsEntity);
-        const c = respectsBusinessScenario(reqProduct, productsEntity);
+        const c = respectsBusinessScenario(reqProduct, productsEntity, packItems);
         totalErrors = totalErrors.concat(a, b, c);
-        // totalErrors = totalErrors.concat(b);
-        // totalErrors = totalErrors.concat(c);
-        console.log(totalErrors);
     }
     if (totalErrors.length > 0) {
         return totalErrors;
@@ -110,22 +104,65 @@ function itemExistsInDb(newProduct, currentProducts) {
     }
     return [];
 }
-function respectsBusinessScenario(cProduct, oldProducts) {
-    let selected, errors = [];
+function respectsBusinessScenario(reqProduct, oldProducts, packItems) {
+    let selected;
+    let errors = [];
+    let selectedPack = null;
+    let relatedPacks = [];
+    let relatedProducts = 0;
     for (let oProduct of oldProducts) {
-        if (oProduct.code == cProduct.product_code) {
+        if (oProduct.code == reqProduct.product_code) {
             selected = oProduct;
         }
     }
     if (typeof (selected) == 'undefined') {
-        errors.push(new response_type_1.ValidationType(ERROR, "O item de id " + cProduct.product_code + " é indefinido na base de dados!"));
+        errors.push(new response_type_1.ValidationType(ERROR, "Erro interno no servidor!"));
         return errors;
     }
-    if (cProduct.new_price < selected.cost_price) {
-        errors.push(new response_type_1.ValidationType(ERROR, "O item de id " + cProduct.product_code + " têm preço menor que custo de produção!"));
+    if (reqProduct.new_price < selected.cost_price) {
+        errors.push(new response_type_1.ValidationType(ERROR, "O item de id " + reqProduct.product_code + " têm preço menor que custo de produção!"));
     }
-    if (cProduct.new_price > selected.sales_price * 1.1 || cProduct.new_price < selected.sales_price * 0.9) {
-        errors.push(new response_type_1.ValidationType(ERROR, "O item de id " + cProduct.product_code + " têm preço 10% diferente do preço de venda!"));
+    if (reqProduct.new_price > selected.sales_price * 1.1 || reqProduct.new_price < selected.sales_price * 0.9) {
+        errors.push(new response_type_1.ValidationType(ERROR, "O item de id " + reqProduct.product_code + " têm preço 10% diferente do preço de venda!"));
+    }
+    for (let pack of packItems) {
+        if (reqProduct.product_code == pack.product_id || reqProduct.product_code == pack.pack_id) {
+            selectedPack = pack;
+        }
+    }
+    if (selectedPack != null && errors.length == 0) {
+        console.log("Existe pacote relacionado");
+        for (let pack of packItems) {
+            if (selectedPack.pack_id == pack.pack_id) {
+                relatedPacks.push(pack);
+            }
+        }
+        for (let pack of relatedPacks) {
+            for (let product of oldProducts) {
+                if (product.code == pack.product_id) {
+                    relatedProducts++;
+                }
+            }
+        }
+        console.log(relatedProducts);
+        let priceOffset = (reqProduct.new_price - selected.sales_price) / relatedProducts;
+        for (let product of oldProducts) {
+            for (let pack of relatedPacks) {
+                if (product.code == pack.product_id) {
+                    console.log("old price = " + product.sales_price + " for product" + product.code);
+                    product.sales_price = product.sales_price + priceOffset;
+                    console.log("New price = " + product.sales_price + " for product" + product.code);
+                }
+                if (pack.pack_id == product.code) {
+                    console.log("old price = " + product.sales_price + " for product" + product.code);
+                    product.sales_price = reqProduct.new_price;
+                    console.log("New price = " + product.sales_price + " for product" + product.code);
+                }
+            }
+        }
+    }
+    else if (errors.length == 0) {
+        selected.sales_price = reqProduct.new_price;
     }
     return errors;
 }
