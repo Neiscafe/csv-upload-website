@@ -1,35 +1,5 @@
-// import { useState } from 'react'
-// import reactLogo from './assets/react.svg'
-// import viteLogo from '/vite.svg'
-// import './App.css'
-// import { Container, Row, Col } from 'react-bootstrap';
-// import CsvUploader from './Csv-uploader';
-
-// const App: React.FC = () => {
-//   const [response, setResponse] = useState<string>('');
-
-//   return (
-//     <Container>
-//       <Row>
-//         <Col>
-//           <h1>Upload de CSV</h1>
-//           <CsvUploader/>
-//         </Col>
-//       </Row>
-//       <Row>
-//         <Col>
-//           <h2>Resposta do Back-end</h2>
-//           <pre>{response}</pre>
-//         </Col>
-//       </Row>
-//     </Container>
-//   );
-// };
-
-// export default App;
-
 import React, { useState } from 'react';
-import { Container, Row, Col } from 'react-bootstrap';
+import { Container, Row, Col, Button } from 'react-bootstrap';
 import CsvUploader from './Csv-uploader';
 import { PRArray } from './model/PRArray';
 import { ProductRequest } from './model/ProductRequest';
@@ -37,6 +7,8 @@ const strOffset = 24;
 
 const App: React.FC = () => {
   const [response, setResponse] = useState<string>('');
+  const[responseType, setResponseType] = useState<string>("");
+  const[responseBody, setResponseBody] = useState<string>("");
 
   const handleUpload = async (file: File) => {
     try {
@@ -61,10 +33,20 @@ const App: React.FC = () => {
       if (response.ok) {
         const data = await response.text();
         setResponse(data);
-      } else {
-        throw new Error('Erro ao enviar o arquivo CSV.');
+      }else{
+        setResponseType("Error!");
+        const data = await response.text();
+        setResponseBody(data)
       }
     } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const onFinish = async ()=>{
+    try{
+
+    }catch(error){
       console.error(error);
     }
   };
@@ -79,7 +61,12 @@ const App: React.FC = () => {
       </Row>
       <Row>
         <Col>
+          <Button onClick={onFinish}>Atualizar</Button>
           <h2>Resposta do Back-end</h2>
+          <div>
+            <h1>{responseType}</h1>
+            <h2>{responseBody}</h2>
+          </div>
           <pre>{response}</pre>
         </Col>
       </Row>
