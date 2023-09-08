@@ -6,8 +6,8 @@ import { ProductRequest } from './model/ProductRequest';
 const strOffset = 24;
 
 const App: React.FC = () => {
-  const[responseType, setResponseType] = useState<boolean>(true);
-  const[responseBody, setResponseBody] = useState<string>("");
+  const [responseType, setResponseType] = useState<boolean>(true);
+  const [responseBody, setResponseBody] = useState<string>("");
 
   const handleUpload = async (file: File) => {
     try {
@@ -18,14 +18,14 @@ const App: React.FC = () => {
       console.log(c);
       let pList = new PRArray();
       let args: string[];
-      for (let i = 0; i < c.length; i++){
+      for (let i = 0; i < c.length; i++) {
         args = c[i].split(",");
         pList.add(new ProductRequest(args));
       }
       console.log(JSON.stringify(pList.array));
-      const response = await fetch('http://localhost:3000/update/', {
+      const response = await fetch('http://localhost:3000/validate/', {
         method: 'POST',
-        headers: {"Content-Type": "application/json; charset=utf-8"},
+        headers: { "Content-Type": "application/json; charset=utf-8" },
         body: JSON.stringify(pList.array),
       });
 
@@ -33,7 +33,7 @@ const App: React.FC = () => {
         setResponseType(false);
         const data = await response.text();
         setResponseBody(data);
-      }else{
+      } else {
         setResponseType(true);
         const data = await response.text();
         setResponseBody(data)
@@ -44,11 +44,23 @@ const App: React.FC = () => {
     }
   };
 
-  const onFinish = async ()=>{
-    try{
-
-    }catch(error){
-      console.error(error);
+  const onFinish = async () => {
+    try {
+      const response = await fetch('http://localhost:3000/update/', {
+        method: 'POST',
+      });
+      if (response.ok) {
+        setResponseType(false);
+        const data = await response.text();
+        setResponseBody(data);
+      } else {
+        setResponseType(true);
+        const data = await response.text();
+        setResponseBody(data)
+      }
+    } catch (error) {
+      setResponseType(true);
+      setResponseBody("Uknown Error ocurred!")
     }
   };
 
@@ -62,7 +74,7 @@ const App: React.FC = () => {
       </Row>
       <Row>
         <Col>
-          <Button onClick={onFinish} disabled = {responseType}>Atualizar</Button>
+          <Button onClick={onFinish} disabled={responseType}>Atualizar</Button>
           <h2>Resposta do Back-end</h2>
           <div>
             <h1>{responseType}</h1>

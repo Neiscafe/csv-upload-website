@@ -25,6 +25,7 @@ const pool = promise_1.default.createPool({
     password: '1234',
     database: 'db',
 });
+let updatedProduct = [];
 const yourController = {
     get(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -40,7 +41,7 @@ const yourController = {
             }
         });
     },
-    update(req, res) {
+    validate(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const jsonData = req.body;
@@ -49,6 +50,7 @@ const yourController = {
                 const [product_db] = yield connection.execute('SELECT * FROM products');
                 const productItems = product_db;
                 const [packs_db] = yield connection.execute('SELECT * FROM packs');
+                connection.release();
                 const packItems = packs_db;
                 const validationStatus = validateItems(products, productItems, packItems);
                 if (validationStatus[0].type == "Success") {
@@ -61,6 +63,20 @@ const yourController = {
             catch (error) {
                 console.error('Erro:', error);
             }
+        });
+    },
+    update(req, res) {
+        return __awaiter(this, void 0, void 0, function* () {
+            const connection = yield pool.getConnection();
+            for (let item of updatedProduct) {
+                connection.execute('UPDATE products SET sales_price = ? WHERE code = ?', [item.sales_price, item.code]).catch(returnError);
+            }
+            connection.release();
+            function returnError(message) {
+                res.status(500).json({ message });
+                return;
+            }
+            res.status(200).json({ message: "Sucesso!" });
         });
     }
 };
@@ -77,7 +93,7 @@ function validateItems(productsFromReq, productsEntity, packItems) {
     }
     else {
         for (let reqProduct of productsFromReq) {
-            priceChange(reqProduct, productsEntity, packItems);
+            updatedProduct = priceChange(reqProduct, productsEntity, packItems);
         }
         return [new response_type_1.ValidationType(SUCCESS, "Itens validados com sucesso!")];
     }
@@ -163,7 +179,7 @@ function priceChange(reqProduct, oldProducts, packItems) {
             for (let pack of relatedPacks) {
                 if (product.code == pack.product_id) {
                     console.log("old price = " + product.sales_price + " for product" + product.code);
-                    product.sales_price = product.sales_price + priceOffset;
+                    product.sales_price = parseFloat((product.sales_price + priceOffset).toString());
                     console.log("New price = " + product.sales_price + " for product" + product.code);
                 }
                 if (pack.pack_id == product.code) {
@@ -178,6 +194,7 @@ function priceChange(reqProduct, oldProducts, packItems) {
         selected.sales_price = reqProduct.new_price;
     }
     console.log(oldProducts);
+    return oldProducts;
 }
 exports.default = yourController;
 //# sourceMappingURL=yourController.js.map

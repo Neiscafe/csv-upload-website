@@ -5,7 +5,6 @@ import { ProductReq } from '../model/product-request';
 import { ProductEntity } from '../model/product-entity';
 import { ValidationType } from '../model/response-type';
 import { isNumber } from 'class-validator';
-import { cp } from 'fs';
 import { Pack } from '../model/pack';
 
 const ERROR = "Error";
@@ -17,6 +16,8 @@ const pool = mysql.createPool({
   password: '1234',
   database: 'db',
 });
+
+let updatedProduct: ProductEntity[] = [];
 
 const yourController = {
   async get(req: Request, res: Response) {
@@ -30,7 +31,7 @@ const yourController = {
       res.status(500).json({ error: 'Erro interno do servidor' });
     }
   },
-  async update(req: Request, res: Response) {
+  async validate(req: Request, res: Response) {
     try {
       const jsonData = req.body;
       const products = plainToClass(ProductReq, jsonData);
@@ -38,8 +39,11 @@ const yourController = {
       const [product_db] = await connection.execute<ProductEntity[] & RowDataPacket[]>('SELECT * FROM products');
       const productItems: ProductEntity[] = product_db;
       const [packs_db] = await connection.execute<Pack[] & RowDataPacket[]>('SELECT * FROM packs');
+      connection.release();
+
       const packItems: Pack[] = packs_db;
       const validationStatus: ValidationType[] = validateItems(products, productItems, packItems);
+
       if (validationStatus[0].type == "Success") {
         res.status(200).json({ validationStatus })
       } else {
@@ -48,6 +52,18 @@ const yourController = {
     } catch (error) {
       console.error('Erro:', error);
     }
+  },
+  async update(req: Request, res: Response){
+    const connection = await pool.getConnection();
+    for(let item of updatedProduct){
+       connection.execute('UPDATE products SET sales_price = ? WHERE code = ?', [item.sales_price, item.code]).catch(returnError);
+    }
+    connection.release();
+    function returnError(message: string){
+      res.status(500).json({message});
+      return;
+    }
+    res.status(200).json({message: "Sucesso!"});
   }
 };
 
@@ -62,7 +78,9 @@ function validateItems(productsFromReq: ProductReq[], productsEntity: ProductEnt
   if (totalErrors.length > 0) {
     return totalErrors;
   } else {
-    for (let reqProduct of productsFromReq) {priceChange(reqProduct, productsEntity, packItems);}
+    for (let reqProduct of productsFromReq) {
+      updatedProduct = priceChange(reqProduct, productsEntity, packItems);
+    }
     return [new ValidationType(SUCCESS, "Itens validados com sucesso!")];
   }
 }
@@ -162,7 +180,7 @@ function priceChange(reqProduct: ProductReq, oldProducts: ProductEntity[], packI
       for (let pack of relatedPacks) {
         if (product.code == pack.product_id) {
           console.log("old price = "+product.sales_price+" for product"+product.code);
-          product.sales_price = product.sales_price + priceOffset
+          product.sales_price = parseFloat((product.sales_price + priceOffset).toString());
           console.log("New price = "+product.sales_price+" for product"+product.code);
         }
         if(pack.pack_id == product.code){
