@@ -16,6 +16,7 @@ const class_transformer_1 = require("class-transformer");
 const promise_1 = __importDefault(require("mysql2/promise"));
 const productForm_1 = require("../model/productForm");
 const jsonschema_1 = require("jsonschema");
+const product_response_1 = require("../model/product-response");
 const jsonValidator = new jsonschema_1.Validator();
 const pool = promise_1.default.createPool({
     host: '127.0.0.1:3306',
@@ -42,17 +43,56 @@ const yourController = {
         return __awaiter(this, void 0, void 0, function* () {
             try {
                 const jsonData = req.body;
-                // if (!jsonData) {
-                //   return res.status(400).json({ error: 'JSON não fornecido na solicitação.' });
-                // }
-                // const form = jsonValidator.validate(jsonData, productSchema);
-                // if (!form.valid) {
-                //   const errors = form.errors.map((error) => error.stack);
-                //   return res.status(400).json({ errors });
-                // }
                 const products = (0, class_transformer_1.plainToClass)(productForm_1.ProductForm, jsonData);
+                const connection = yield pool.getConnection();
+                const [product_db] = yield connection.execute('SELECT * FROM products');
+                console.log(product_db);
+                let items = new product_response_1.ProductResponse(product_db);
+                let correctItems = [];
+                // const [packs_db] = await connection.execute<Product[] & RowDataPacket[]>('SELECT * FROM packs');
+                products.forEach(element => {
+                    ////
+                    ////  ANTES DO RETURN COLOCAR OS RES.ERROR CORRESPONDENTES A CADA ERRO!!!!
+                    ////  SE DER TEMPO, SUBSTITUIR OS INTEIROS POR OBJETOS DE EXCESSAO~!!!!
+                    ////
+                    switch (element.isValid()) {
+                        case 0:
+                            console.error("O item de id " + element.product_code + " têm um código em formato não permitido!");
+                            break;
+                        case 1:
+                            console.error("O item de id " + element.product_code + " têm um preço em formato não permitido!");
+                            break;
+                        case 2:
+                            correctItems.push(element);
+                            break;
+                        default:
+                            break;
+                    }
+                    if (items.containsCode(element) == false) {
+                        console.error("O item de id " + element.product_code + " não existe e não foi adicionado!!");
+                    }
+                    else {
+                        correctItems.push(element);
+                    }
+                    switch (items.respectsBusiness(element)) {
+                        case 0:
+                            console.error("O item de id " + element.product_code + " Não existe no banco de dados!");
+                            break;
+                        case 1:
+                            console.error("O item de id " + element.product_code + " têm preço menor que custo de produção!");
+                            break;
+                        case 2:
+                            console.error("O item de id " + element.product_code + " têm preço 10% diferente do preço de venda!");
+                            break;
+                        case 3:
+                            correctItems.push(element);
+                            break;
+                        default:
+                            break;
+                    }
+                });
                 console.log('JSON recebido:', products);
-                res.json({ message: jsonData });
+                res.json(jsonData);
             }
             catch (error) {
                 console.error('Erro:', error);
