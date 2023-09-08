@@ -62,6 +62,7 @@ function validateItems(productsFromReq: ProductReq[], productsEntity: ProductEnt
   if (totalErrors.length > 0) {
     return totalErrors;
   } else {
+    for (let reqProduct of productsFromReq) {priceChange(reqProduct, productsEntity, packItems);}
     return [new ValidationType(SUCCESS, "Itens validados com sucesso!")];
   }
 }
@@ -97,9 +98,6 @@ function itemExistsInDb(newProduct: ProductReq, currentProducts: ProductEntity[]
 function respectsBusinessScenario(reqProduct: ProductReq, oldProducts: ProductEntity[], packItems: Pack[]): ValidationType[] {
   let selected;
   let errors: ValidationType[] = [];
-  let selectedPack: Pack | null = null;
-  let relatedPacks: Pack[] = [];
-  let relatedProducts: number = 0;
 
   for (let oProduct of oldProducts) {
     if (oProduct.code == reqProduct.product_code) {
@@ -118,13 +116,31 @@ function respectsBusinessScenario(reqProduct: ProductReq, oldProducts: ProductEn
     errors.push(new ValidationType(ERROR, "O item de id " + reqProduct.product_code + " têm preço 10% diferente do preço de venda!"));
   }
 
+  
+  return errors;
+}
+
+function priceChange(reqProduct: ProductReq, oldProducts: ProductEntity[], packItems: Pack[]): ProductEntity[]{
+  let selectedPack: Pack | null = null;
+  let relatedPacks: Pack[] = [];
+  let relatedProducts: number = 0;
+  let selected: ProductEntity | null = null;
+
+  console.log(oldProducts);
+
+  for (let oProduct of oldProducts) {
+    if (oProduct.code == reqProduct.product_code) {
+      selected = oProduct;
+    }
+  }
+
   for (let pack of packItems) {
     if (reqProduct.product_code == pack.product_id || reqProduct.product_code==pack.pack_id) {
       selectedPack = pack;
     }
   }
 
-  if (selectedPack!=null && errors.length==0) {
+  if (selectedPack!=null && selected!=null) {
     console.log("Existe pacote relacionado")
     for (let pack of packItems) {
       if (selectedPack.pack_id == pack.pack_id) {
@@ -156,10 +172,11 @@ function respectsBusinessScenario(reqProduct: ProductReq, oldProducts: ProductEn
         }
       }
     }
-  } else if(errors.length==0){
+  } else if(selected!=null){
     selected.sales_price = reqProduct.new_price;
   }
-  return errors;
+  console.log(oldProducts);
+  return oldProducts;
 }
 
 export default yourController;
