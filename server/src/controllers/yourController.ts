@@ -45,9 +45,9 @@ const yourController = {
       const validationStatus: ValidationType[] = validateItems(products, productItems, packItems);
 
       if (validationStatus[0].type == "Success") {
-        res.status(200).json({ validationStatus })
+        res.status(200).json({validationStatus})
       } else {
-        res.status(500).json({ validationStatus });
+        res.status(500).json({validationStatus});
       }
     } catch (error) {
       console.error('Erro:', error);
@@ -133,8 +133,6 @@ function respectsBusinessScenario(reqProduct: ProductReq, oldProducts: ProductEn
   if (reqProduct.new_price > selected.sales_price * 1.1 || reqProduct.new_price < selected.sales_price * 0.9) {
     errors.push(new ValidationType(ERROR, "O item de id " + reqProduct.product_code + " têm preço 10% diferente do preço de venda!"));
   }
-
-  
   return errors;
 }
 

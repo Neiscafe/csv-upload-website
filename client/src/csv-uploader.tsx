@@ -31,8 +31,8 @@ const CsvUploader: React.FC<CsvUploaderProps> = ({ onUpload }) => {
           accept=".csv"
         />
       </form>
-      <Button variant="primary" onClick={handleUpload} disabled={!selectedFile}>
-        Enviar CSV
+      <Button className="bValidate" variant="primary" onClick={handleUpload} disabled={!selectedFile}>
+        Validar
       </Button>
     </div>
   );
