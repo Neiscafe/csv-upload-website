@@ -1,6 +1,7 @@
 import express from 'express';
 import bodyParser from 'body-parser';
 import router from './routes';
+import {port} from './server-config'
 
 const app = express();
 
@@ -8,7 +9,7 @@ app.use(bodyParser.json());
 
 export default app;
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || port;
 
 app.use('/', router);
 

@@ -17,30 +17,12 @@ const promise_1 = __importDefault(require("mysql2/promise"));
 const product_request_1 = require("../model/product-request");
 const response_type_1 = require("../model/response-type");
 const class_validator_1 = require("class-validator");
+const server_config_js_1 = require("../server-config.js");
 const ERROR = "Error";
 const SUCCESS = "Success";
-const pool = promise_1.default.createPool({
-    host: '127.0.0.1:3306',
-    user: 'new',
-    password: '1234',
-    database: 'db',
-});
+const pool = promise_1.default.createPool(server_config_js_1.config);
 let updatedProduct = [];
 const yourController = {
-    get(req, res) {
-        return __awaiter(this, void 0, void 0, function* () {
-            try {
-                const connection = yield pool.getConnection();
-                const [rows] = yield connection.execute('SELECT * FROM products');
-                connection.release();
-                res.json(rows);
-            }
-            catch (error) {
-                console.error('Erro:', error);
-                res.status(500).json({ error: 'Erro interno do servidor' });
-            }
-        });
-    },
     validate(req, res) {
         return __awaiter(this, void 0, void 0, function* () {
             try {
