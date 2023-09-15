@@ -77,7 +77,7 @@ const App: React.FC = () => {
                         <CsvUploader validateFile={handleUpload} />
                     </div>
                     <div className='buttons-div'>
-                        <Button variant='warning' disabled={buttonDisabled} onClick={onFinish}>Atualizar</Button>
+                        <Button className='b-update' variant='warning' disabled={buttonDisabled} onClick={onFinish}>Atualizar</Button>
                     </div>
                     <div className='responses-div'>
                         <ResponseBox response={responseMessage} />

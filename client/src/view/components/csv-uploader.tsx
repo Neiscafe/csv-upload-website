@@ -3,10 +3,10 @@ import '../styles/csv-uploader.css'
 import { Button } from 'react-bootstrap';
 
 interface CsvUploaderParams {
-    validateFile: (file: File)=>void;
+    validateFile: (file: File) => void;
 }
 
-const CsvUploader: React.FC<CsvUploaderParams> = ({validateFile}) => {
+const CsvUploader: React.FC<CsvUploaderParams> = ({ validateFile }) => {
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
     const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -24,15 +24,15 @@ const CsvUploader: React.FC<CsvUploaderParams> = ({validateFile}) => {
 
     return (
         <div className='body'>
-            <form>
-                <input
+            <form className='file-input'>
+                <input 
                     type='file'
                     id="csvFile"
                     onChange={handleFileChange}
                     accept=".csv"
                 />
             </form>
-            <Button className="bValidate" variant="danger" onClick={fileIsValid} disabled={!selectedFile}>
+            <Button className="b-validate" variant="danger" onClick={fileIsValid} disabled={!selectedFile}>
                 Validar
             </Button>
         </div>

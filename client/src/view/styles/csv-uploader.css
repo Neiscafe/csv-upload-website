@@ -1,6 +1,10 @@
 .body{
     text-align: center;
 }
-.bValidate{
+.b-validate{
+    width: 100%;
     margin-top: 5%;
+}
+.file-input{
+    height: 50%;
 }
