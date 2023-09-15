@@ -1,0 +1,35 @@
+.page{  
+    display: flex;
+    width: auto;
+    justify-content: center;
+    /* background-color: burlywood; */
+
+}
+.header{
+    background-color: rgb(0, 128, 225);
+    width: auto;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+body{
+    margin: 0% ;
+}
+.header_image{
+    width: 20%;
+    height: 30%;
+}
+.uploader-div{
+    display: flex;
+    width: fit-content;
+    margin-top: 10%;
+    margin-bottom: 5%;
+}
+.buttons-div{
+    width: auto;
+    height: auto;
+    text-align: center;
+    /* background-color: aquamarine; */
+}
+
+

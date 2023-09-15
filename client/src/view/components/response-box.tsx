@@ -1,6 +1,6 @@
 // import React from "react";
-import { Button, Card, ListGroup, ListGroupItem } from "react-bootstrap";
-import { ServerResponse } from "./model/server-response";
+import { Card, ListGroup, ListGroupItem } from "react-bootstrap";
+import { ServerResponse } from "../../model/server-response";
 import { FC } from "react";
 
 interface ServerResponseProps {

@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
-import { Container, Row, Button } from 'react-bootstrap';
-import CsvUploader from './CsvUploader';
-import { PRArray } from './model/PRArray';
-import { ProductRequest } from './model/ProductRequest';
-import ResponseBox from './ResponseBox';
-import { ServerResponse } from './model/server-response';
+import { Container, Button, Col } from 'react-bootstrap';
+import CsvUploader from './csv-uploader';
+import { PRArray } from '../../model/PRArray';
+import { ProductRequest } from '../../model/ProductRequest';
+import ResponseBox from './response-box';
+import { ServerResponse } from '../../model/server-response';
+import '../styles/app.css';
+
 const strOffset = 24;
 
 const App: React.FC = () => {
@@ -64,18 +66,25 @@ const App: React.FC = () => {
     };
 
     return (
-        <Container>
-            <Container className='header'>
+        <div>
+            <div className='header'>
                 <img className='header_image' src='../common/placeholder_company_logo.jpg' alt='Company Logo'></img>
                 <h2>Upload de CSV</h2>
-            </Container>
+            </div>
             <Container className='page'>
-                <CsvUploader onUpload={handleUpload} />
-                <Button disabled={buttonDisabled} className='bUpdate' onClick={onFinish}>Atualizar</Button>
-                <ResponseBox response={responseMessage} />
+                <Col>
+                    <div className='uploader-div'>
+                        <CsvUploader validateFile={handleUpload} />
+                    </div>
+                    <div className='buttons-div'>
+                        <Button variant='warning' disabled={buttonDisabled} onClick={onFinish}>Atualizar</Button>
+                    </div>
+                    <div className='responses-div'>
+                        <ResponseBox response={responseMessage} />
+                    </div>
+                </Col>
             </Container>
-        </Container>
-
+        </div>
     );
 };
 
